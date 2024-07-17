@@ -1,8 +1,8 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from "prop-types";
+import styled from '@emotion/styled';
 
-import pokemon from './pokemondata.json';
 
 const PokemonRow = ({ pokemon, onSelect }) => (
   <tr>
@@ -25,10 +25,12 @@ const PokemonInfo = ({name, base }) => (
     <h1>{name.english}</h1>
     <table>
       { Object.keys(base).map(key => (
-        <tr key={key}>
-          <td>{key}</td>
-          <td>{base[key]}</td>
-        </tr>
+        <tbody>
+          <tr key={`${key.HP}_${name.english}`}>
+            <td>{key}</td>
+            <td>{base[key]}</td>
+          </tr>
+        </tbody>
       ))}
     </table>
   </div>
@@ -45,32 +47,46 @@ PokemonInfo.propTypes = {
     Speed: PropTypes.number.isRequired, }),
 };
 
+const Title = styled.h1`text-align: center;`;
+const Container = styled.div`        
+        margin: auto;
+        width: 800px;
+        paddingTop: 1rem;`;
+const TwoColGridLayout = styled.div`
+          display: grid;
+          grid-template-columns: 60% 40%;
+          grid-columnGap: 1rem;
+        `;
+const Input = styled.input`        
+        width: 100%;
+        font-size: x-large;
+        padding: 0.2rem;
+        `;
+
+
 function App() {
   const [filter, filterSet] = useState("");
   const [selectedItem, selectedItemSet] = useState(null);
+  const [ pokemon, pokemonSet ] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/nobsts/pokemondata.json")
+    .then(response => response.json()).then(data => pokemonSet(data));
+  }, []);
+
   return (
-    <div
-      style={{
-        margin: "auto",
-        width: 800,
-        paddingTop: "1rem",
-      }}>
-      <h1 className='title'>Pokemon Search</h1>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '70% 30%',
-          gridColumnGap: '1rem',
-        }} >
-
+    <Container>
+      <Title>Pokemon Search</Title>
+      <TwoColGridLayout>
         <div>
-          <input
-            value={filter}
-            onChange={
-              (event) => filterSet(event.target.value)
-            }
-          />
+          <div className='searchbox'>
+            <Input
+              value={filter}
+              onChange={
+                (event) => filterSet(event.target.value)
+              }
+            />
+          </div>
           <table width={"100%"}>
             <thead>
               <tr>
@@ -90,8 +106,8 @@ function App() {
         {selectedItem && (
           <PokemonInfo {...selectedItem} />
         )}
-      </div>     
-    </div>
+      </TwoColGridLayout>     
+    </Container>
   );
 }
 

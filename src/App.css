@@ -1,14 +1,12 @@
-.title {
-  text-align: center;
-}
-
 th {
   text-align: left;
   font-size: x-large;
 }
 
-input {
-  width: 100%;
-  font-size: x-large;
-  padding: 0.2rem;
+.outline {
+  border: 1px solid blue;
 }
+
+/* .searchbox {
+  margin: 1rem;
+} */
